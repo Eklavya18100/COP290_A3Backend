@@ -1,0 +1,1308 @@
+openapi: 3.0.3
+info:
+  title: proVis
+  description: API documentation for proVis website
+  contact:
+    email: aavegj1904@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: https://proVis.herokuapp.com/api/
+tags:
+- name: Customers
+  description: Access to customer related information and related operations
+- name: ProductApiResponse
+  description: Access to products related information and related operations
+- name: ContractorApiResponse
+  description: Access to contractor related information and related operations
+- name: Orders
+  description: Access to orders related information and related operations
+- name: User
+  description: login logout related endpoints; user represents either a contractor
+    or customer
+paths:
+  /customers:
+    get:
+      tags:
+      - Customers
+      summary: get a list of all customers
+      description: retrieves all customers.
+      operationId: get_customers
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customers'
+                x-content-type: application/json
+        "404":
+          description: Customers not found
+      x-openapi-router-controller: swagger_server.controllers.customers_controller
+    post:
+      tags:
+      - Customers
+      summary: create a new customer
+      description: create a new customer given all details of customer while signing
+        up
+      operationId: post_customers
+      requestBody:
+        description: creates a new customer
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customers'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        "400":
+          description: malformed request
+      x-openapi-router-controller: swagger_server.controllers.customers_controller
+  /customers/{id}:
+    get:
+      tags:
+      - Customers
+      summary: get a customer by id
+      description: retrieves a specific customer by id.
+      operationId: get_customer
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer that needs to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
+        "404":
+          description: Customer not found
+      x-openapi-router-controller: swagger_server.controllers.customers_controller
+    delete:
+      tags:
+      - Customers
+      summary: deletes a specific customer
+      description: deletes a specific customer by id
+      operationId: delete_customer
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer that needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "404":
+          description: customer id does not exist
+      x-openapi-router-controller: swagger_server.controllers.customers_controller
+    patch:
+      tags:
+      - Customers
+      summary: update the details of a customer by id
+      description: updates the details of a customer by passing parameters to be changed
+      operationId: patch_customer
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer that needs to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: updates a new customer
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customers'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers'
+        "400":
+          description: malformed request
+        "404":
+          description: customer id does not exist
+      x-openapi-router-controller: swagger_server.controllers.customers_controller
+  /customers/{id}/orders:
+    get:
+      tags:
+      - Orders
+      summary: get a list of all orders of a specific customers
+      description: fetches all orders of a specific customer
+      operationId: get_customer_orders
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer whose orders need to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Orders'
+                x-content-type: application/json
+        "404":
+          description: Customer id not found
+      x-openapi-router-controller: swagger_server.controllers.orders_controller
+    post:
+      tags:
+      - Orders
+      summary: create a new order for a customer with given id
+      description: create a new order for a customer with given id
+      operationId: post_order
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer for which new order is being added
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: creates a new order for a specific customer
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Orders'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orders'
+        "400":
+          description: malformed request
+      x-openapi-router-controller: swagger_server.controllers.orders_controller
+  /customers/{id}/orders/{orderid}:
+    get:
+      tags:
+      - Orders
+      summary: get a customer's specific order by id of both
+      description: retrieves a specific order by id of customer and order
+      operationId: get_customer_order
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer whose orders need to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: orderid
+        in: path
+        description: ID of order that needs to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orders'
+        "404":
+          description: Customer or order not found
+      x-openapi-router-controller: swagger_server.controllers.orders_controller
+    delete:
+      tags:
+      - Orders
+      summary: deletes a specific customer's order by id of both
+      description: deletes a specific customer's order by id of both
+      operationId: delete_customer_order
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer whose orders need to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: orderid
+        in: path
+        description: ID of order that needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "404":
+          description: customer id or order id does not exist
+      x-openapi-router-controller: swagger_server.controllers.orders_controller
+    patch:
+      tags:
+      - Orders
+      summary: update the details of a customer's specific order by id of both
+      description: updates the details of a customer's order by passing parameters
+        to be changed
+      operationId: patch_customer_order
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer whose orders need to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: orderid
+        in: path
+        description: ID of order that needs to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: updates a customer's specific order
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Orders'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Orders'
+        "400":
+          description: malformed request
+        "404":
+          description: customer id or order id does not exist
+      x-openapi-router-controller: swagger_server.controllers.orders_controller
+  /customers/{id}/bookmarks:
+    get:
+      tags:
+      - Bookmarks
+      summary: get a list of all bookmarks of a specific customer
+      description: fetches all bookmarks of a specific customer
+      operationId: get_customer_bookmarks
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer whose bookmark is needed
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bookmarks'
+                x-content-type: application/json
+        "404":
+          description: Customer id not found
+      x-openapi-router-controller: swagger_server.controllers.bookmarks_controller
+    post:
+      tags:
+      - Bookmarks
+      summary: create a new bookmark for a customer with given id
+      description: create a new bookamark for a customer with given id
+      operationId: post_bookmark
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer for which new bookmark has to be added
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: creates a new bookmark for a specific customer
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bookmarks'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookmarks'
+        "400":
+          description: malformed request
+      x-openapi-router-controller: swagger_server.controllers.bookmarks_controller
+  /customers/{id}/bookmarks/{bookmarkid}:
+    get:
+      tags:
+      - Bookmarks
+      summary: get a customer's specific bookmark by id of both
+      description: retrieves a specific bookmark by id of customer and order
+      operationId: get_customer_bookmark
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: bookmarkid
+        in: path
+        description: ID of bookmark that needs to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookmarks'
+        "404":
+          description: Customer or bookmark not found
+      x-openapi-router-controller: swagger_server.controllers.bookmarks_controller
+    delete:
+      tags:
+      - Bookmarks
+      summary: deletes a specific customer's bookmark by id of both
+      description: deletes a specific customer's bookmark by id of both
+      operationId: delete_customer_bookmark
+      parameters:
+      - name: id
+        in: path
+        description: ID of customer whose bookmark needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: bookmarkid
+        in: path
+        description: ID of bookmark that needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "404":
+          description: customer id or bookmark id does not exist
+      x-openapi-router-controller: swagger_server.controllers.bookmarks_controller
+  /products:
+    get:
+      tags:
+      - ProductApiResponse
+      summary: get a list of all products
+      description: retrieves all products.
+      operationId: get_products
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductApiResponse'
+                x-content-type: application/json
+        "404":
+          description: products not found
+      x-openapi-router-controller: swagger_server.controllers.product_api_response_controller
+    post:
+      tags:
+      - ProductApiResponse
+      summary: create a new product
+      description: create a new product
+      operationId: post_product
+      requestBody:
+        description: creates a new product
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductApiResponse'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductApiResponse'
+        "400":
+          description: malformed request
+      x-openapi-router-controller: swagger_server.controllers.product_api_response_controller
+  /products/{id}:
+    get:
+      tags:
+      - ProductApiResponse
+      summary: get a product by id
+      description: retrieves a specific product by id.
+      operationId: get_product
+      parameters:
+      - name: id
+        in: path
+        description: ID of product that needs to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductApiResponse'
+        "404":
+          description: product not found
+      x-openapi-router-controller: swagger_server.controllers.product_api_response_controller
+    delete:
+      tags:
+      - ProductApiResponse
+      summary: deletes a specific product
+      description: deletes a specific product by id
+      operationId: delete_product
+      parameters:
+      - name: id
+        in: path
+        description: ID of product that needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "404":
+          description: product id does not exist
+      x-openapi-router-controller: swagger_server.controllers.product_api_response_controller
+    patch:
+      tags:
+      - ProductApiResponse
+      summary: update the details of a product by id
+      description: updates the details of a product by passing parameters to be changed
+      operationId: patch_product
+      parameters:
+      - name: id
+        in: path
+        description: ID of product that needs to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: updates a new product
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductApiResponse'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductApiResponse'
+        "400":
+          description: malformed request
+        "404":
+          description: product id does not exist
+      x-openapi-router-controller: swagger_server.controllers.product_api_response_controller
+  /products/findByTags:
+    get:
+      tags:
+      - ProductApiResponse
+      summary: gets all products matching the tags
+      description: gets all products matching the tags
+      operationId: get_product_by_tags
+      parameters:
+      - name: location
+        in: query
+        description: location name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: category
+        in: query
+        description: category name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductApiResponse'
+        "404":
+          description: product not found
+      x-openapi-router-controller: swagger_server.controllers.product_api_response_controller
+  /contractors:
+    get:
+      tags:
+      - ContractorApiResponse
+      summary: get a list of all contractors
+      description: retrieves all contractors.
+      operationId: get_contractors
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContractorApiResponse'
+                x-content-type: application/json
+        "404":
+          description: contractors not found
+      x-openapi-router-controller: swagger_server.controllers.contractor_api_response_controller
+    post:
+      tags:
+      - ContractorApiResponse
+      summary: create a new contractor
+      description: create a new contractor given all details of contractor while signing
+        up
+      operationId: post_contractor
+      requestBody:
+        description: creates a new contractor
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractorApiResponse'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        "400":
+          description: malformed request
+      x-openapi-router-controller: swagger_server.controllers.contractor_api_response_controller
+  /contractors/{id}:
+    get:
+      tags:
+      - ContractorApiResponse
+      summary: get a contractor by id
+      description: retrieves a specific contractor by id.
+      operationId: get_contractor
+      parameters:
+      - name: id
+        in: path
+        description: ID of contractor that needs to be fetched
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractorApiResponse'
+        "404":
+          description: contractor not found
+      x-openapi-router-controller: swagger_server.controllers.contractor_api_response_controller
+    delete:
+      tags:
+      - ContractorApiResponse
+      summary: deletes a specific contractor
+      description: deletes a specific contractor by id
+      operationId: delete_contractor
+      parameters:
+      - name: id
+        in: path
+        description: ID of contractor that needs to be deleted
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "404":
+          description: contractor id does not exist
+      x-openapi-router-controller: swagger_server.controllers.contractor_api_response_controller
+    patch:
+      tags:
+      - ContractorApiResponse
+      summary: update the details of a contractor by id
+      description: updates the details of a contractor by passing parameters to be
+        changed
+      operationId: patch_contractor
+      parameters:
+      - name: id
+        in: path
+        description: ID of contractor that needs to be updated
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: updates a new contractor
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractorApiResponse'
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractorApiResponse'
+        "400":
+          description: malformed request
+        "404":
+          description: contractor id does not exist
+      x-openapi-router-controller: swagger_server.controllers.contractor_api_response_controller
+  /user/emailRegister:
+    post:
+      tags:
+      - User
+      summary: registration
+      description: ""
+      operationId: email_register
+      requestBody:
+        description: registers the user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        "400":
+          description: Invalid username/email/password supplied
+      x-openapi-router-controller: swagger_server.controllers.user_controller
+  /user/emailLogin:
+    post:
+      tags:
+      - User
+      summary: email login
+      description: ""
+      operationId: email_login
+      requestBody:
+        description: logs in the user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        "400":
+          description: Invalid username/email/password supplied
+      x-openapi-router-controller: swagger_server.controllers.user_controller
+  /user/sendVerificationMail:
+    get:
+      tags:
+      - User
+      summary: verification email
+      description: ""
+      operationId: send_verification_mail
+      parameters:
+      - name: Authorization
+        in: header
+        description: an authorization header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Bearer 85jkl
+      responses:
+        "200":
+          description: successful operation
+      x-openapi-router-controller: swagger_server.controllers.user_controller
+  /user/verifyEmail:
+    post:
+      tags:
+      - User
+      summary: verify email
+      description: ""
+      operationId: verify_email
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmail'
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                example: success
+                x-content-type: application/json
+        "400":
+          description: Invalid username/email/password supplied
+      x-openapi-router-controller: swagger_server.controllers.user_controller
+components:
+  schemas:
+    Customers:
+      type: object
+      properties:
+        cus_id:
+          type: string
+          description: customer id
+          example: vycs78
+        username:
+          type: string
+          example: Aaveg
+        emailid:
+          type: string
+          example: aavegj1904@gmail.com
+        googleid:
+          type: string
+          format: email
+          example: aavegj1904@gmail.com
+        facebookid:
+          type: string
+          format: email
+        phone_number:
+          type: integer
+          example: 9205231951
+        password:
+          type: string
+          example: "12345"
+      example:
+        googleid: aavegj1904@gmail.com
+        password: "12345"
+        facebookid: ""
+        emailid: aavegj1904@gmail.com
+        phone_number: 9205231951
+        cus_id: vycs78
+        username: Aaveg
+    Orders:
+      type: object
+      properties:
+        id:
+          type: string
+          example: vycs78
+        cus_uid:
+          type: string
+          description: customer id of the one who placed the order
+          example: vycs78
+        order_date:
+          type: string
+          format: date-time
+        p_uid:
+          type: string
+          description: product id of the product ordered
+          example: vycs78
+        scheduling_status:
+          type: string
+          description: status of meeting scheduled
+          enum:
+          - completed
+          - confirmed
+          - pending
+        payment_status:
+          type: string
+          description: "status of payment, if order confirmed on meeting"
+          enum:
+          - meeting pending
+          - completed
+          - pending
+        exchange_emails:
+          type: string
+          description: email communication b/w customer and contractor
+      example:
+        order_date: 2000-01-23T04:56:07.000+00:00
+        cus_uid: vycs78
+        p_uid: vycs78
+        payment_status: meeting pending
+        exchange_emails: exchange_emails
+        id: vycs78
+        scheduling_status: completed
+    Bookmarks:
+      type: object
+      properties:
+        id:
+          type: string
+          example: vycs78
+        cus_uid:
+          type: string
+          description: customer id of the one who placed the order
+          example: vycs78
+        p_uid:
+          type: string
+          description: product id of the product bookamarked
+          example: vycs78
+      example:
+        cus_uid: vycs78
+        p_uid: vycs78
+        id: vycs78
+    Contractors:
+      type: object
+      properties:
+        contractor_id:
+          type: string
+          description: contractor id
+          example: vycs78
+        username:
+          type: string
+          example: Aaveg
+        emailid:
+          type: string
+          example: aavegj1904@gmail.com
+        phone_number:
+          type: integer
+          example: 9205231951
+        address:
+          type: string
+        company_uid:
+          type: string
+          description: company id which has hired contractor
+      example:
+        contractor_id: vycs78
+        address: address
+        company_uid: company_uid
+        emailid: aavegj1904@gmail.com
+        phone_number: 9205231951
+        username: Aaveg
+    ContractorApiResponse:
+      type: object
+      properties:
+        contractor_id:
+          type: string
+          description: contractor id
+          example: vycs78
+        username:
+          type: string
+          example: Aaveg
+        emailid:
+          type: string
+          example: aavegj1904@gmail.com
+        phone_number:
+          type: integer
+          example: 9205231951
+        address:
+          type: string
+        company:
+          $ref: '#/components/schemas/Companies'
+        product:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductApiResponse'
+        order:
+          type: array
+          items:
+            $ref: '#/components/schemas/Orders'
+      example:
+        product:
+        - p_uid: vycs78
+          location:
+            name: Noida
+            id: vycs78
+          product_list:
+            p_img_url: http://example.com/aeiou
+            p_uid: vycs78
+            p_description: p_description
+            company:
+              address: address
+              name: name
+              company_uid: company_uid
+              company_img_url: http://example.com/aeiou
+            id: vycs78
+            p_contractor:
+              contractor_id: vycs78
+              address: address
+              company_uid: company_uid
+              emailid: aavegj1904@gmail.com
+              phone_number: 9205231951
+              username: Aaveg
+          category:
+            name: Interior design
+            id: vycs78
+        - p_uid: vycs78
+          location:
+            name: Noida
+            id: vycs78
+          product_list:
+            p_img_url: http://example.com/aeiou
+            p_uid: vycs78
+            p_description: p_description
+            company:
+              address: address
+              name: name
+              company_uid: company_uid
+              company_img_url: http://example.com/aeiou
+            id: vycs78
+            p_contractor:
+              contractor_id: vycs78
+              address: address
+              company_uid: company_uid
+              emailid: aavegj1904@gmail.com
+              phone_number: 9205231951
+              username: Aaveg
+          category:
+            name: Interior design
+            id: vycs78
+        contractor_id: vycs78
+        address: address
+        emailid: aavegj1904@gmail.com
+        phone_number: 9205231951
+        company:
+          address: address
+          name: name
+          company_uid: company_uid
+          company_img_url: http://example.com/aeiou
+        username: Aaveg
+        order:
+        - order_date: 2000-01-23T04:56:07.000+00:00
+          cus_uid: vycs78
+          p_uid: vycs78
+          payment_status: meeting pending
+          exchange_emails: exchange_emails
+          id: vycs78
+          scheduling_status: completed
+        - order_date: 2000-01-23T04:56:07.000+00:00
+          cus_uid: vycs78
+          p_uid: vycs78
+          payment_status: meeting pending
+          exchange_emails: exchange_emails
+          id: vycs78
+          scheduling_status: completed
+    Products:
+      type: object
+      properties:
+        p_uid:
+          type: string
+          example: vycs78
+        location:
+          $ref: '#/components/schemas/Product_locations'
+        category:
+          $ref: '#/components/schemas/Product_categories'
+        profile:
+          $ref: '#/components/schemas/Product_profiles'
+    ProductApiResponse:
+      type: object
+      properties:
+        p_uid:
+          type: string
+          example: vycs78
+        location:
+          $ref: '#/components/schemas/Product_locations'
+        category:
+          $ref: '#/components/schemas/Product_categories'
+        product_list:
+          $ref: '#/components/schemas/Product_lists'
+      example:
+        p_uid: vycs78
+        location:
+          name: Noida
+          id: vycs78
+        product_list:
+          p_img_url: http://example.com/aeiou
+          p_uid: vycs78
+          p_description: p_description
+          company:
+            address: address
+            name: name
+            company_uid: company_uid
+            company_img_url: http://example.com/aeiou
+          id: vycs78
+          p_contractor:
+            contractor_id: vycs78
+            address: address
+            company_uid: company_uid
+            emailid: aavegj1904@gmail.com
+            phone_number: 9205231951
+            username: Aaveg
+        category:
+          name: Interior design
+          id: vycs78
+    Product_locations:
+      type: object
+      properties:
+        id:
+          type: string
+          example: vycs78
+        name:
+          type: string
+          example: Noida
+      example:
+        name: Noida
+        id: vycs78
+    Product_categories:
+      type: object
+      properties:
+        id:
+          type: string
+          example: vycs78
+        name:
+          type: string
+          example: Interior design
+      example:
+        name: Interior design
+        id: vycs78
+    Product_profiles:
+      type: object
+      properties:
+        p_uid:
+          type: string
+          description: product id
+          example: vycs78
+        projects:
+          $ref: '#/components/schemas/Product_projects'
+        business:
+          $ref: '#/components/schemas/Product_businesses'
+        aboutus:
+          $ref: '#/components/schemas/Product_aboutus'
+    Product_projects:
+      type: object
+      properties:
+        id:
+          type: string
+          example: vycs78
+        project_name:
+          type: string
+          example: Interior design at Singh homes
+        project_address:
+          type: string
+        project_image_url:
+          type: string
+          format: url
+    Product_aboutus:
+      type: object
+      properties:
+        id:
+          type: string
+          example: vycs78
+        description:
+          type: string
+    Product_businesses:
+      type: object
+      properties:
+        id:
+          type: string
+          example: vycs78
+        contractor_id:
+          type: string
+          example: vycs78
+        website_link:
+          type: string
+          format: url
+        followers:
+          type: integer
+          example: 1000
+        address:
+          type: string
+    Product_lists:
+      type: object
+      properties:
+        id:
+          type: string
+          example: vycs78
+        p_uid:
+          type: string
+          description: product id
+          example: vycs78
+        p_img_url:
+          type: string
+          description: product image link
+          format: url
+        p_description:
+          type: string
+          description: details of the product
+        company:
+          $ref: '#/components/schemas/Companies'
+        p_contractor:
+          $ref: '#/components/schemas/Contractors'
+      example:
+        p_img_url: http://example.com/aeiou
+        p_uid: vycs78
+        p_description: p_description
+        company:
+          address: address
+          name: name
+          company_uid: company_uid
+          company_img_url: http://example.com/aeiou
+        id: vycs78
+        p_contractor:
+          contractor_id: vycs78
+          address: address
+          company_uid: company_uid
+          emailid: aavegj1904@gmail.com
+          phone_number: 9205231951
+          username: Aaveg
+    Companies:
+      type: object
+      properties:
+        company_uid:
+          type: string
+          description: company id
+        name:
+          type: string
+        company_img_url:
+          type: string
+          format: url
+        address:
+          type: string
+      example:
+        address: address
+        name: name
+        company_uid: company_uid
+        company_img_url: http://example.com/aeiou
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: access token for login
+          example: 2649jkef
+        info:
+          $ref: '#/components/schemas/LoginResponse_info'
+      example:
+        token: 2649jkef
+        info:
+          uid: 35825uiwe
+          session_id: 242dg
+          username: Aaveg_Jain
+    UserRegister:
+      type: object
+      properties:
+        name:
+          type: string
+          example: aaveg
+        email_id:
+          type: string
+          example: aavegj1904gmail.com
+        password:
+          type: string
+          example: "12345"
+    UserLogin:
+      type: object
+      properties:
+        email_id:
+          type: string
+          example: aavegj1904gmail.com
+        password:
+          type: string
+          example: "12345"
+    RegisterResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: 38484jfnl
+        info:
+          $ref: '#/components/schemas/RegisterResponse_info'
+      example:
+        token: 38484jfnl
+        info:
+          cus_uid: 343c
+          username: aaveg
+    VerifyEmail:
+      type: object
+      properties:
+        token:
+          type: string
+          example: 38484jfnl
+        user_id:
+          type: string
+    LoginResponse_info:
+      type: object
+      properties:
+        uid:
+          type: string
+          description: unique id of user (customer or contractor)
+          example: 35825uiwe
+        username:
+          type: string
+          example: Aaveg_Jain
+        session_id:
+          type: string
+          example: 242dg
+      example:
+        uid: 35825uiwe
+        session_id: 242dg
+        username: Aaveg_Jain
+    RegisterResponse_info:
+      type: object
+      properties:
+        cus_uid:
+          type: string
+          example: 343c
+        username:
+          type: string
+          example: aaveg
+      example:
+        cus_uid: 343c
+        username: aaveg
+
